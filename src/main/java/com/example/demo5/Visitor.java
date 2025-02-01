@@ -24,4 +24,8 @@ public class Visitor {
 
     @Column(nullable = false)
     private String contactNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "companyId")
+    private Company company;
 }
