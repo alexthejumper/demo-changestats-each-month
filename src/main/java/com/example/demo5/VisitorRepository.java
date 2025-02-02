@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface VisitorRepository extends JpaRepository<Visitor, UUID> {
     List<Visitor> findByFirstNameAndLastNameContainsIgnoreCaseAndCompany_CompanyNameContainsIgnoreCase(String firstName, String lastName, String companyName);
+
+    Visitor findByFirstNameAndLastName(String firstName, String lastName);
 }

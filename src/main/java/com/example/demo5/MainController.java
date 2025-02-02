@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/visitors")
@@ -72,6 +74,36 @@ public class MainController {
     public ResponseEntity<VisitorLogDtoPortal> updateVisitorAndCreateLog(@RequestBody UpdateVisitorLogRequestDto request) {
         VisitorLogDtoPortal visitorLog = visitorPortalService.updateVisitorAndCreateLog(request.visitorDto(), request.visitorLogDtoPortal());
         return ResponseEntity.ok(visitorLog);
+    }
+
+    @PostMapping("/updateTest")
+    @ResponseBody
+    public String updateAndCreateLogTest(@RequestBody VisitorTestDto testDto) {
+        System.out.println("Test dto name: " + testDto.firstName());
+        visitorPortalService.testUpdateAndCreate(testDto);
+        return "Successful update and creation of log";
+    }
+
+
+    @GetMapping("/reasons/reasons-list")
+    @ResponseBody
+    public List<Reason> getAllReasons() {
+        for (Reason reason : visitorBackOfficeService.getReasonTypeList()) {
+            System.out.println("Reason: " + reason.isArchived());
+        }
+        return visitorBackOfficeService.getReasonTypeList();
+    }
+
+    @GetMapping("/contact")
+    public ResponseEntity<Map<String, String>> getContactNumber(@RequestParam String firstName, @RequestParam String lastName) {
+        String contactNumber = visitorPortalService.getContactNumber(firstName, lastName);
+
+        if (contactNumber != null) {
+            return ResponseEntity.ok(Collections.singletonMap("contactNumber", contactNumber));
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 

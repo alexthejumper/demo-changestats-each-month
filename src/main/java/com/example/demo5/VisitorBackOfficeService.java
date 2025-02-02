@@ -10,4 +10,6 @@ public interface VisitorBackOfficeService {
 
     List<VisitorReasonCountDto> getCountOfReasons();
 
+    List<Reason> getReasonTypeList();
+
 }

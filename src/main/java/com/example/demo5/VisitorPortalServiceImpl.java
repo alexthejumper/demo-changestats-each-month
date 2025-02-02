@@ -90,6 +90,31 @@ public class VisitorPortalServiceImpl implements VisitorPortalService {
         return visitorLog;
     }
 
+    private VisitorLog createVisitorLogTest(Visitor visitor, VisitorTestDto testDto) {
+        VisitorLog visitorLog = new VisitorLog();
+        visitorLog.setVisitor(visitor);
+
+        Optional.ofNullable(testDto.reasonId())
+                .map(UUID::fromString) // Convert String to UUID
+                .flatMap(reasonRepository::findById)
+                .ifPresent(visitorLog::setReason);
+
+        Optional.ofNullable(testDto.badgeId())
+                .map(UUID::fromString)
+                .flatMap(badgeRepository::findById)
+                .ifPresent(visitorLog::setBadge);
+
+        visitorLog.setClockIn(LocalDateTime.now());
+        visitorLog.setOtherReason(testDto.otherReason());
+
+        String encodedSignature = Base64.getEncoder().encodeToString(testDto.signature().getBytes());
+        visitorLog.setSignature(encodedSignature);
+        visitorLog.setAttendeeName(testDto.attendeeName());
+
+        return visitorLog;
+
+    }
+
 
     @Override
     public List<VisitorLogDtoPortal> getVisitorsByDetails(String firstName, String lastName, String companyName) {
@@ -125,4 +150,23 @@ public class VisitorPortalServiceImpl implements VisitorPortalService {
 
         return visitorLogMapper.convertToDtoPortal(visitorLog);
     }
+
+    @Override
+    public String getContactNumber(String firstName, String lastName) {
+        return visitorRepository.findByFirstNameAndLastName(firstName, lastName).getContactNumber();
+    }
+
+    @Override
+    public void testUpdateAndCreate(VisitorTestDto testDto) {
+        Visitor existingVisitor = visitorRepository.findByFirstNameAndLastName(testDto.firstName(), testDto.lastName());
+
+        if (existingVisitor == null) {
+            throw new IllegalArgumentException("Visitor not found for name: " + testDto.firstName() + " " + testDto.lastName());
+        }
+        commonService.updateVisitorTest(existingVisitor, testDto);
+        commonService.updateCompanyTest(existingVisitor, testDto);
+        VisitorLog visitorLog = createVisitorLogTest(existingVisitor, testDto);
+        visitorLogRepository.save(visitorLog);
+    }
+
 }

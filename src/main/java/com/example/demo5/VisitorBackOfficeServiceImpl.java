@@ -20,12 +20,14 @@ public class VisitorBackOfficeServiceImpl implements VisitorBackOfficeService {
     private final EncryptionUtil encryptionUtil;
 
     private final CompanyRepository companyRepository;
+    private final ReasonRepository reasonRepository;
 
     @Autowired
-    public VisitorBackOfficeServiceImpl(VisitorLogRepository visitorLogRepository, EncryptionUtil encryptionUtil, CompanyRepository companyRepository) {
+    public VisitorBackOfficeServiceImpl(VisitorLogRepository visitorLogRepository, EncryptionUtil encryptionUtil, CompanyRepository companyRepository, ReasonRepository reasonRepository) {
         this.visitorLogRepository = visitorLogRepository;
         this.encryptionUtil = encryptionUtil;
         this.companyRepository = companyRepository;
+        this.reasonRepository = reasonRepository;
     }
     private int calculateWeekInMonth(LocalDateTime clockIn) {
         return (clockIn.getDayOfMonth() - 1) / 7 + 1; // Calculate the week number within the month
@@ -143,5 +145,10 @@ public class VisitorBackOfficeServiceImpl implements VisitorBackOfficeService {
                         visitor.setCompany(null);
                     }
                 });
+    }
+
+    @Override
+    public List<Reason> getReasonTypeList() {
+        return reasonRepository.findAll();
     }
 }

@@ -14,4 +14,9 @@ public interface VisitorPortalService {
     List<VisitorLogDtoPortal> getVisitorsByDetails(String firstName, String lastName, String companyName);
 
     VisitorLogDtoPortal updateVisitorAndCreateLog(VisitorDto visitorDto, VisitorLogDtoPortal visitorLogDtoPortal);
+
+    String getContactNumber(String firsName, String lastName);
+
+    void testUpdateAndCreate(VisitorTestDto testDto);
+
 }
